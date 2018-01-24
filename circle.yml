@@ -1,0 +1,17 @@
+machine:
+  node:
+    version: 4.6.0
+
+test:
+  post:
+    - npm install -g coveralls
+    - nyc report --reporter=text-lcov | coveralls
+
+deployment:
+  master:
+    branch: master
+    owner: AntonBazhal
+    commands:
+      - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+      - npm install -g publish
+      - publish

@@ -1,0 +1,10 @@
+.eslintrc
+.eslintignore
+.editorconfig
+.npmrc
+.nyc_output/
+*.log
+circle.yml
+coverage/
+git.json
+test/

@@ -1,0 +1,5 @@
+.nyc_output/
+*.log
+git.json
+coverage/
+node_modules/
