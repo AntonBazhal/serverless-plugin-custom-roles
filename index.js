@@ -85,7 +85,7 @@ class CustomRoles {
       let eventSourceArn;
       if (typeof event.stream === 'string') {
         eventSourceArn = event.stream;
-      } else if (typeof event.stream === 'object' && typeof event.stream.arn === 'string') {
+      } else if (typeof event.stream === 'object' && event.stream.arn) {
         eventSourceArn = event.stream.arn;
       }
 

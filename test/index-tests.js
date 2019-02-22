@@ -498,15 +498,27 @@ describe('serverless-plugin-custom-roles', function() {
 
     it('should add streams policy when function has stream event sources defined', function() {
       const streamArn = 'test-stream-arn';
+      const streamArnIntrinsic = {
+        'Fn::ImportValue': 'KinesisStreamId'
+      };
+
       const instance = createTestInstance({
         functions: {
           function1: {
-            events: [{
-              stream: {
-                type: 'dynamodb',
-                arn: streamArn
+            events: [
+              {
+                stream: {
+                  type: 'dynamodb',
+                  arn: streamArn
+                }
+              },
+              {
+                stream: {
+                  type: 'kinesis',
+                  arn: streamArnIntrinsic
+                }
               }
-            }]
+            ]
           }
         }
       });
@@ -524,16 +536,28 @@ describe('serverless-plugin-custom-roles', function() {
                   PolicyName: 'streams',
                   PolicyDocument: {
                     Version: '2012-10-17',
-                    Statement: [{
-                      Effect: 'Allow',
-                      Action: [
-                        'dynamodb:GetRecords',
-                        'dynamodb:GetShardIterator',
-                        'dynamodb:DescribeStream',
-                        'dynamodb:ListStreams'
-                      ],
-                      Resource: [streamArn]
-                    }]
+                    Statement: [
+                      {
+                        Effect: 'Allow',
+                        Action: [
+                          'dynamodb:GetRecords',
+                          'dynamodb:GetShardIterator',
+                          'dynamodb:DescribeStream',
+                          'dynamodb:ListStreams'
+                        ],
+                        Resource: [streamArn]
+                      },
+                      {
+                        Effect: 'Allow',
+                        Action: [
+                          'kinesis:GetRecords',
+                          'kinesis:GetShardIterator',
+                          'kinesis:DescribeStream',
+                          'kinesis:ListStreams'
+                        ],
+                        Resource: [streamArnIntrinsic]
+                      }
+                    ]
                   }
                 }]
               }
