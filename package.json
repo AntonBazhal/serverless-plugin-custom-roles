@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-custom-roles",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Serverless plugin that makes creation of per function IAM roles easier",
   "repository": {
     "type": "git",
@@ -32,18 +32,18 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-subset": "^1.6.0",
-    "eslint": "^4.16.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-mocha": "^4.11.0",
-    "mocha": "^5.0.0",
-    "nyc": "^11.4.1",
-    "sinon": "^4.2.0"
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-mocha": "^5.3.0",
+    "mocha": "^6.0.1",
+    "nyc": "^13.3.0",
+    "sinon": "^7.2.4"
   },
   "dependencies": {
     "lodash.set": "^4.3.2",
-    "semver": "^5.5.0"
+    "semver": "^5.6.0"
   }
 }
