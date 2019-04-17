@@ -13,6 +13,13 @@ function createTestInstance(options) {
   options = options || {}; // eslint-disable-line no-param-reassign
 
   const functions = options.functions || {};
+  Object.keys(functions).map(functionName => {
+    // Serverless core provides function name automatically
+    // when user does not provide an explicit override.
+    functions[functionName].name = functions[functionName].name || `foo-dev-${functionName}`;
+    return true;
+  });
+
   return new CustomRoles({
     version: options.version || '1.12.0',
     service: {

@@ -35,7 +35,7 @@ class CustomRoles {
     };
   }
 
-  getLoggingPolicy(stackName, functionName) {
+  getLoggingPolicy(functionName) {
     const statements = [
       {
         Effect: 'Allow',
@@ -47,7 +47,7 @@ class CustomRoles {
               'arn:aws:logs',
               { Ref: 'AWS::Region' },
               { Ref: 'AWS::AccountId' },
-              `log-group:/aws/lambda/${stackName}-${functionName}:*`
+              `log-group:/aws/lambda/${functionName}:*`
             ]
           ]
         }]
@@ -62,7 +62,7 @@ class CustomRoles {
               'arn:aws:logs',
               { Ref: 'AWS::Region' },
               { Ref: 'AWS::AccountId' },
-              `log-group:/aws/lambda/${stackName}-${functionName}:*:*`
+              `log-group:/aws/lambda/${functionName}:*:*`
             ]
           ]
         }]
@@ -175,7 +175,7 @@ class CustomRoles {
       const functionObj = service.getFunction(functionName);
       const roleId = this.getRoleId(functionName);
 
-      const policies = [this.getLoggingPolicy(stackName, functionName)];
+      const policies = [this.getLoggingPolicy(functionObj.name)];
       if (sharedPolicy) {
         policies.push(sharedPolicy);
       }
