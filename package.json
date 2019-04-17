@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-custom-roles",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Serverless plugin that makes creation of per function IAM roles easier",
   "repository": {
     "type": "git",
