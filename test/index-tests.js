@@ -9,6 +9,17 @@ const CustomRoles = require('../index');
 chai.use(chaiSubset);
 const expect = chai.expect;
 
+const VPC_POLICY = {
+  'Fn::Join': [
+    '',
+    [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
+    ],
+  ],
+};
+
 function createTestInstance(options) {
   options = options || {}; // eslint-disable-line no-param-reassign
 
@@ -567,6 +578,65 @@ describe('serverless-plugin-custom-roles', function() {
                     ]
                   }
                 }]
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
+    it('should add vpc policy when function has vpc configuration', function() {
+      const instance = createTestInstance({
+        functions: {
+          function1: {
+            vpc: {
+              securityGroupIds: ['securityGroupId1']
+            }
+          }
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                ManagedPolicyArns: [VPC_POLICY]
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
+    it('should add vpc policy when provider has vpc configuration', function() {
+      const instance = createTestInstance({
+        provider: {
+          vpc: {
+            securityGroupIds: ['securityGroupId1']
+          }
+        },
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                ManagedPolicyArns: [VPC_POLICY]
               }
             }
           }
