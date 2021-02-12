@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/AntonBazhal/serverless-plugin-custom-roles.git"
   },
+  "engines": {
+    "node": ">=10"
+  },
   "keywords": [
     "aws",
     "aws lambda",
@@ -32,18 +35,18 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4.3.0",
     "chai-subset": "^1.6.0",
-    "eslint": "^5.14.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-mocha": "^5.3.0",
-    "mocha": "^6.0.1",
-    "nyc": "^13.3.0",
-    "sinon": "^7.2.4"
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-mocha": "^8.0.0",
+    "mocha": "^8.3.0",
+    "nyc": "^15.1.0",
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "lodash.set": "^4.3.2",
-    "semver": "^5.6.0"
+    "semver": "^7.3.4"
   }
 }
