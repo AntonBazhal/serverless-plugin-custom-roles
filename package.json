@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/AntonBazhal/serverless-plugin-custom-roles.git"
   },
+  "engines": {
+    "node": ">=10"
+  },
   "keywords": [
     "aws",
     "aws lambda",
