@@ -644,5 +644,22 @@ describe('serverless-plugin-custom-roles', function() {
 
       sinon.assert.notCalled(instance.serverless.cli.log);
     });
+
+    it('should not add vpc policy when vpc is not configured', function() {
+      const instance = createTestInstance({
+        provider: {},
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources.Resources.Function1LambdaFunctionRole.Properties')
+        .that.does.not.have.property('ManagedPolicyArns');
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
   });
 });
