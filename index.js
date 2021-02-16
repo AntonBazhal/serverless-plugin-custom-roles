@@ -3,6 +3,12 @@
 const semver = require('semver');
 const set = require('lodash.set');
 
+const FUNCTION_SCHEMA = {
+  properties: {
+    iamRoleStatements: { type: 'array' }
+  }
+};
+
 const VPC_POLICY = {
   'Fn::Join': [
     '',
@@ -26,6 +32,8 @@ class CustomRoles {
     this.hooks = {
       'before:package:setupProviderConfiguration': () => this.createRoles()
     };
+
+    this.addValidation();
   }
 
   log(message) {
@@ -218,6 +226,13 @@ class CustomRoles {
       functionObj.role = roleId;
       set(service, `resources.Resources.${roleId}`, roleResource);
     });
+  }
+
+  addValidation() {
+    if (this.serverless.configSchemaHandler
+      && this.serverless.configSchemaHandler.defineFunctionProperties) {
+      this.serverless.configSchemaHandler.defineFunctionProperties('aws', FUNCTION_SCHEMA);
+    }
   }
 }
 

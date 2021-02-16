@@ -54,7 +54,8 @@ function createTestInstance(options) {
           }
         }
       };
-    }
+    },
+    configSchemaHandler: options.configSchemaHandler || {}
   }, {
     stage: options.stage || 'dev'
   });
@@ -77,6 +78,23 @@ describe('serverless-plugin-custom-roles', function() {
       instance.hooks['before:package:setupProviderConfiguration']();
 
       sinon.assert.calledOnce(stub);
+    });
+
+    it('should not add validation for serverless@1', function() {
+      expect(() => createTestInstance({ configSchemaHandler: {} }))
+        .to.not.throw();
+    });
+
+    it('should add validation for serverless@2', function() {
+      const stub = sinon.stub();
+
+      createTestInstance({
+        configSchemaHandler: {
+          defineFunctionProperties: stub
+        }
+      });
+
+      sinon.assert.calledOnceWithExactly(stub, 'aws', sinon.match.object);
     });
   });
 
