@@ -449,6 +449,30 @@ describe('serverless-plugin-custom-roles', function() {
       sinon.assert.notCalled(instance.serverless.cli.log);
     });
 
+    it('should not add role to functions that have a custom role defined', function() {
+      const customRole = { foo: 'foo' };
+      const instance = createTestInstance({
+        functions: {
+          function1: {},
+          function2: {
+            role: customRole
+          }
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.functions.function1.role')
+        .that.is.equal('Function1LambdaFunctionRole');
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.functions.function2.role')
+        .that.is.deep.equal(customRole);
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
     it('should add custom policy when function has statements defined', function() {
       const iamRoleStatements = [{
         Effect: 'Allow',
