@@ -198,33 +198,36 @@ class CustomRoles {
 
     functions.forEach(functionName => {
       const functionObj = service.getFunction(functionName);
-      const roleId = this.getRoleId(functionName);
 
-      const managedPolicies = [];
-      const policies = [this.getLoggingPolicy(functionObj.name)];
+      if (!functionObj.role) {
+        const roleId = this.getRoleId(functionName);
 
-      if (sharedPolicy) {
-        policies.push(sharedPolicy);
+        const managedPolicies = [];
+        const policies = [this.getLoggingPolicy(functionObj.name)];
+
+        if (sharedPolicy) {
+          policies.push(sharedPolicy);
+        }
+
+        const customPolicy = this.getPolicyFromStatements('custom', functionObj.iamRoleStatements);
+        if (customPolicy) {
+          policies.push(customPolicy);
+        }
+
+        const streamsPolicy = this.getStreamsPolicy(functionName, functionObj);
+        if (streamsPolicy) {
+          policies.push(streamsPolicy);
+        }
+
+        if (service.provider.vpc || functionObj.vpc) {
+          managedPolicies.push(VPC_POLICY);
+        }
+
+        const roleResource = this.getRole(stackName, functionName, policies, managedPolicies);
+
+        functionObj.role = roleId;
+        set(service, `resources.Resources.${roleId}`, roleResource);
       }
-
-      const customPolicy = this.getPolicyFromStatements('custom', functionObj.iamRoleStatements);
-      if (customPolicy) {
-        policies.push(customPolicy);
-      }
-
-      const streamsPolicy = this.getStreamsPolicy(functionName, functionObj);
-      if (streamsPolicy) {
-        policies.push(streamsPolicy);
-      }
-
-      if (service.provider.vpc || functionObj.vpc) {
-        managedPolicies.push(VPC_POLICY);
-      }
-
-      const roleResource = this.getRole(stackName, functionName, policies, managedPolicies);
-
-      functionObj.role = roleId;
-      set(service, `resources.Resources.${roleId}`, roleResource);
     });
   }
 
