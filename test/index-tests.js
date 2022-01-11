@@ -556,6 +556,52 @@ describe('serverless-plugin-custom-roles', function() {
       sinon.assert.notCalled(instance.serverless.cli.log);
     });
 
+    it('should add shared policy when provider has iam role statements defined', function() {
+      const statements = [{
+        Effect: 'Allow',
+        Action: [
+          'xray:PutTraceSegments',
+          'xray:PutTelemetryRecords'
+        ],
+        Resource: '*'
+      }];
+      const instance = createTestInstance({
+        provider: {
+          iam: {
+            role: {
+              statements
+            }
+          }
+        },
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                Policies: [{
+                  PolicyName: 'shared',
+                  PolicyDocument: {
+                    Version: '2012-10-17',
+                    Statement: statements
+                  }
+                }]
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
     it('should add streams policy when function has stream event sources defined', function() {
       const streamArn = 'test-stream-arn';
       const streamArnIntrinsic = {
