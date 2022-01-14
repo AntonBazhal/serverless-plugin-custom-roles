@@ -192,7 +192,12 @@ class CustomRoles {
       return;
     }
 
-    const sharedRoleStatements = service.provider.iamRoleStatements;
+    let sharedRoleStatements = null;
+    if (service.provider.iam && service.provider.iam.role && service.provider.iam.role.statements) {
+      sharedRoleStatements = service.provider.iam.role.statements;
+    } else if (service.provider.iamRoleStatements) {
+      sharedRoleStatements = service.provider.iamRoleStatements;
+    }
     const sharedPolicy = this.getPolicyFromStatements('shared', sharedRoleStatements);
     const stackName = this.provider.naming.getStackName();
 
