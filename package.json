@@ -33,6 +33,12 @@
     "email": "am.bazhal@gmail.com",
     "url": "https://github.com/AntonBazhal"
   },
+  "contributors": [
+    {
+      "name": "Paul Cruse III",
+      "url": "https://github.com/paulcruse3"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.3.4",
