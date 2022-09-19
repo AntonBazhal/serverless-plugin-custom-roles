@@ -154,7 +154,7 @@ class CustomRoles {
     return this.getPolicyFromStatements('streams', statements);
   }
 
-  getRole(stackName, functionName, policies, managedPolicies) {
+  getRole(stackName, functionName, policies, managedPolicies, permissionsBoundary) {
     const role = {
       Type: 'AWS::IAM::Role',
       Properties: {
@@ -174,6 +174,10 @@ class CustomRoles {
 
     if (managedPolicies && managedPolicies.length) {
       role.Properties.ManagedPolicyArns = managedPolicies;
+    }
+
+    if (permissionsBoundary && permissionsBoundary.length) {
+      role.Properties.PermissionsBoundary = permissionsBoundary;
     }
 
     return role;
@@ -198,6 +202,18 @@ class CustomRoles {
     } else if (service.provider.iamRoleStatements) {
       sharedRoleStatements = service.provider.iamRoleStatements;
     }
+
+    let pb = null;
+
+    if (
+      service.provider.iam
+      && service.provider.iam.role
+      && service.provider.iam.role.permissionsBoundary) {
+      pb = service.provider.iam.role.permissionsBoundary;
+    } else if (service.provider.rolePermissionsBoundary) {
+      pb = service.provider.rolePermissionsBoundary;
+    }
+
     const sharedPolicy = this.getPolicyFromStatements('shared', sharedRoleStatements);
     const stackName = this.provider.naming.getStackName();
 
@@ -228,7 +244,7 @@ class CustomRoles {
           managedPolicies.push(VPC_POLICY);
         }
 
-        const roleResource = this.getRole(stackName, functionName, policies, managedPolicies);
+        const roleResource = this.getRole(stackName, functionName, policies, managedPolicies, pb);
 
         functionObj.role = roleId;
         set(service, `resources.Resources.${roleId}`, roleResource);
