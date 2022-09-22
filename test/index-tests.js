@@ -813,7 +813,6 @@ describe('serverless-plugin-custom-roles', function() {
     });
 
     it('should not add a permission boundary when provider has none', function() {
-      const expectedPermissionsBoundary = 'TEST_PERMISSIONS_BOUNDARY';
       const instance = createTestInstance({
         provider: {
           iam: {
@@ -828,17 +827,8 @@ describe('serverless-plugin-custom-roles', function() {
       instance.createRoles();
 
       expect(instance)
-        .to.have.nested.property('serverless.service.resources')
-        .that.not.containSubset({
-          Resources: {
-            Function1LambdaFunctionRole: {
-              Type: 'AWS::IAM::Role',
-              Properties: {
-                PermissionsBoundary: expectedPermissionsBoundary
-              }
-            }
-          }
-        });
+        .to.have.nested.property('serverless.service.resources.Resources.Function1LambdaFunctionRole.Properties')
+        .that.does.not.have.property('PermissionsBoundary');
 
       sinon.assert.notCalled(instance.serverless.cli.log);
     });
