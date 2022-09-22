@@ -749,5 +749,98 @@ describe('serverless-plugin-custom-roles', function() {
 
       sinon.assert.notCalled(instance.serverless.cli.log);
     });
+
+    it('should add a permissionsBoundary when provider has one defined', function() {
+      const expectedPermissionsBoundary = 'TEST_PERMISSIONS_BOUNDARY';
+      const instance = createTestInstance({
+        provider: {
+          iam: {
+            role: {
+              permissionsBoundary: expectedPermissionsBoundary
+            }
+          }
+        },
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                PermissionsBoundary: expectedPermissionsBoundary
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
+    it('should add a rolePermissionsBoundary when provider has one defined', function() {
+      const expectedPermissionsBoundary = 'TEST_PERMISSIONS_BOUNDARY';
+      const instance = createTestInstance({
+        provider: {
+          rolePermissionsBoundary: expectedPermissionsBoundary
+        },
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                PermissionsBoundary: expectedPermissionsBoundary
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
+
+    it('should not add a permission boundary when provider has none', function() {
+      const expectedPermissionsBoundary = 'TEST_PERMISSIONS_BOUNDARY';
+      const instance = createTestInstance({
+        provider: {
+          iam: {
+            role: {}
+          }
+        },
+        functions: {
+          function1: {}
+        }
+      });
+
+      instance.createRoles();
+
+      expect(instance)
+        .to.have.nested.property('serverless.service.resources')
+        .that.not.containSubset({
+          Resources: {
+            Function1LambdaFunctionRole: {
+              Type: 'AWS::IAM::Role',
+              Properties: {
+                PermissionsBoundary: expectedPermissionsBoundary
+              }
+            }
+          }
+        });
+
+      sinon.assert.notCalled(instance.serverless.cli.log);
+    });
   });
 });
