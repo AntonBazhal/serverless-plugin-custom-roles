@@ -18,12 +18,15 @@ plugins:
 
 provider:
   name: aws
-  iamRoleStatements: # [Optional] these statements will be applied to all functions
-    - Effect: "Allow"
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource: "*"
+  iam:
+    role:
+      statements: # [Optional] these statements will be applied to all functions
+        - Effect: "Allow"
+          Action:
+            - "xray:PutTraceSegments"
+            - "xray:PutTelemetryRecords"
+          Resource: "*"
+      permissionsBoundary: "arn:aws:iam::123456789012:policy/boundaries" # [Optional] the ARN of the policy used to set the permissions boundary for the role
 
 functions:
   function1:
