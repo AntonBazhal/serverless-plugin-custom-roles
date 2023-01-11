@@ -415,7 +415,9 @@ describe('serverless-plugin-custom-roles', function() {
                           'Fn::Join': [
                             ':',
                             [
-                              'arn:aws:logs',
+                              'arn',
+                              { Ref: 'AWS::Partition'},
+                              'logs',
                               { Ref: 'AWS::Region' },
                               { Ref: 'AWS::AccountId' },
                               'log-group:/aws/lambda/foo-dev-function1:*'
@@ -430,7 +432,9 @@ describe('serverless-plugin-custom-roles', function() {
                           'Fn::Join': [
                             ':',
                             [
-                              'arn:aws:logs',
+                              'arn',
+                              { Ref: 'AWS::Partition' },
+                              'logs',
                               { Ref: 'AWS::Region' },
                               { Ref: 'AWS::AccountId' },
                               'log-group:/aws/lambda/foo-dev-function1:*:*'
