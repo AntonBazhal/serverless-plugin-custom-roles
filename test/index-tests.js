@@ -11,11 +11,11 @@ const expect = chai.expect;
 
 const VPC_POLICY = {
   'Fn::Join': [
-    '',
+    ':',
     [
-      'arn:',
+      'arn',
       { Ref: 'AWS::Partition' },
-      ':iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
+      'iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole',
     ],
   ],
 };
