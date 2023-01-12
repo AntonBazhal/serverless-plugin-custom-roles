@@ -64,7 +64,7 @@ class CustomRoles {
             ':',
             [
               'arn',
-              { Ref: 'AWS::Partition'},
+              { Ref: 'AWS::Partition' },
               'logs',
               { Ref: 'AWS::Region' },
               { Ref: 'AWS::AccountId' },

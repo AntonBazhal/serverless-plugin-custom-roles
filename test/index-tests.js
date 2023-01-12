@@ -416,7 +416,7 @@ describe('serverless-plugin-custom-roles', function() {
                             ':',
                             [
                               'arn',
-                              { Ref: 'AWS::Partition'},
+                              { Ref: 'AWS::Partition' },
                               'logs',
                               { Ref: 'AWS::Region' },
                               { Ref: 'AWS::AccountId' },
