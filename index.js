@@ -95,21 +95,22 @@ class CustomRoles {
     return this.getPolicyFromStatements('logging', statements);
   }
 
-  getStreamsPolicy(functionName, functionObj) {
+  getEventPolicy(functionName, functionObj, eventType) {
     if (!functionObj.events) {
       return null;
     }
 
     const resources = functionObj.events.reduce((acc, event) => {
-      if (!event.stream) {
+      if (!event[eventType]) {
         return acc;
       }
 
+      let e = event[eventType];
       let eventSourceArn;
-      if (typeof event.stream === 'string') {
-        eventSourceArn = event.stream;
-      } else if (typeof event.stream === 'object' && event.stream.arn) {
-        eventSourceArn = event.stream.arn;
+      if (typeof e === 'string') {
+        eventSourceArn = e;
+      } else if (typeof e === 'object' && e.arn) {
+        eventSourceArn = e.arn;
       }
 
       if (!eventSourceArn) {
@@ -117,17 +118,19 @@ class CustomRoles {
         return acc;
       }
 
-      const streamType = event.stream.type || eventSourceArn.split(':')[2];
-      if (streamType === 'dynamodb') {
+      const eventSubType = eventType === 'stream' ? e.type || eventSourceArn.split(':')[2] : undefined;
+      if (eventType === 'stream' && eventSubType === 'dynamodb') {
         acc.dynamodb.push(eventSourceArn);
-      } else if (streamType === 'kinesis') {
+      } else if (eventType === 'stream' && eventSubType === 'kinesis') {
         acc.kinesis.push(eventSourceArn);
+      } else if (eventType === 'sqs') {
+        acc.sqs.push(eventSourceArn);
       } else {
-        this.log(`WARNING: Stream event type for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
+        this.log(`WARNING: event type for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
       }
 
       return acc;
-    }, { dynamodb: [], kinesis: [] });
+    }, { dynamodb: [], kinesis: [], sqs: [] });
 
     const statements = [];
     if (resources.dynamodb.length) {
@@ -137,7 +140,7 @@ class CustomRoles {
           'dynamodb:GetRecords',
           'dynamodb:GetShardIterator',
           'dynamodb:DescribeStream',
-          'dynamodb:ListStreams'
+          'dynamodb:ListStreams',
         ],
         Resource: resources.dynamodb
       });
@@ -149,13 +152,32 @@ class CustomRoles {
           'kinesis:GetRecords',
           'kinesis:GetShardIterator',
           'kinesis:DescribeStream',
-          'kinesis:ListStreams'
+          'kinesis:ListStreams',
         ],
         Resource: resources.kinesis
       });
     }
+    if (resources.sqs.length) {
+      statements.push({
+        Effect: 'Allow',
+        Action: [
+          'sqs:ReceiveMessage',
+          'sqs:DeleteMessage',
+          'sqs:GetQueueAttributes'
+        ],
+        Resource: resources.sqs
+      });
+    }
 
-    return this.getPolicyFromStatements('streams', statements);
+    return this.getPolicyFromStatements(eventType, statements);
+  }
+
+  getEventPolicyName(eventType) {
+    if (eventType === 'stream') { return 'streams' }
+    else if (eventType === 'sqs') { return 'queues' }
+    else {
+      this.log(`WARNING: event type for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
+    }
   }
 
   getRole(stackName, functionName, policies, managedPolicies, permissionsBoundary) {
@@ -239,9 +261,14 @@ class CustomRoles {
           policies.push(customPolicy);
         }
 
-        const streamsPolicy = this.getStreamsPolicy(functionName, functionObj);
+        const streamsPolicy = this.getEventPolicy(functionName, functionObj, 'stream');
         if (streamsPolicy) {
           policies.push(streamsPolicy);
+        }
+
+        const sqsPolicy = this.getEventPolicy(functionName, functionObj, 'sqs');
+        if (sqsPolicy) {
+          policies.push(sqsPolicy);
         }
 
         if (service.provider.vpc || functionObj.vpc) {
