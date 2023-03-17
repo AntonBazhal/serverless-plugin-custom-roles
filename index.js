@@ -95,6 +95,17 @@ class CustomRoles {
     return this.getPolicyFromStatements('logging', statements);
   }
 
+  getEventPolicyName(eventType, functionName) {
+    if (eventType === 'stream') {
+      return 'streams';
+    }
+    if (eventType === 'sqs') {
+      return 'queues';
+    }
+    this.log(`WARNING: event type for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
+    return undefined;
+  }
+
   getEventPolicy(functionName, functionObj, eventType) {
     if (!functionObj.events) {
       return null;
@@ -105,7 +116,7 @@ class CustomRoles {
         return acc;
       }
 
-      let e = event[eventType];
+      const e = event[eventType];
       let eventSourceArn;
       if (typeof e === 'string') {
         eventSourceArn = e;
@@ -114,7 +125,7 @@ class CustomRoles {
       }
 
       if (!eventSourceArn) {
-        this.log(`WARNING: Stream event source for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
+        this.log(`WARNING: event source for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
         return acc;
       }
 
@@ -169,15 +180,8 @@ class CustomRoles {
       });
     }
 
-    return this.getPolicyFromStatements(eventType, statements);
-  }
-
-  getEventPolicyName(eventType) {
-    if (eventType === 'stream') { return 'streams' }
-    else if (eventType === 'sqs') { return 'queues' }
-    else {
-      this.log(`WARNING: event type for function '${functionName}' is not configured properly. IAM permissions will not be set properly.`);
-    }
+    return this.getPolicyFromStatements(this
+      .getEventPolicyName(eventType, functionName), statements);
   }
 
   getRole(stackName, functionName, policies, managedPolicies, permissionsBoundary) {
