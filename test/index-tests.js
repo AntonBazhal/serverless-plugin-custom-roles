@@ -98,7 +98,7 @@ describe('serverless-plugin-custom-roles', function() {
     });
   });
 
-  describe('#getStreamsPolicy', function() {
+  describe('#getEventPolicy for stream', function() {
     beforeEach(function() {
       this.functionName = 'testFunction';
       this.instance = createTestInstance();
@@ -107,7 +107,7 @@ describe('serverless-plugin-custom-roles', function() {
     it('should do nothing if function does not have events defined', function() {
       const functionObj = {};
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result).to.be.null;
       sinon.assert.notCalled(this.instance.serverless.cli.log);
@@ -120,7 +120,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result).to.be.null;
       sinon.assert.notCalled(this.instance.serverless.cli.log);
@@ -134,7 +134,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -167,7 +167,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -196,12 +196,12 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result).to.be.null;
       sinon.assert.calledWithExactly(
         this.instance.serverless.cli.log,
-        `[serverless-plugin-custom-roles]: WARNING: Stream event source for function '${this.functionName}' is not configured properly. IAM permissions will not be set properly.`
+        `[serverless-plugin-custom-roles]: WARNING: event source for function '${this.functionName}' is not configured properly. IAM permissions will not be set properly.`
       );
     });
 
@@ -216,7 +216,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -248,7 +248,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -281,7 +281,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -314,7 +314,7 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result)
         .to.containSubset({
@@ -347,12 +347,12 @@ describe('serverless-plugin-custom-roles', function() {
         }]
       };
 
-      const result = this.instance.getStreamsPolicy(this.functionName, functionObj);
+      const result = this.instance.getEventPolicy(this.functionName, functionObj, 'stream');
 
       expect(result).to.be.null;
       sinon.assert.calledWithExactly(
         this.instance.serverless.cli.log,
-        `[serverless-plugin-custom-roles]: WARNING: Stream event type for function '${this.functionName}' is not configured properly. IAM permissions will not be set properly.`
+        `[serverless-plugin-custom-roles]: WARNING: event type for function '${this.functionName}' is not configured properly. IAM permissions will not be set properly.`
       );
     });
   });
